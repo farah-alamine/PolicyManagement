@@ -2,6 +2,8 @@
 using PolicyManagement.Core.Interfaces.IRepositories;
 using PolicyManagement.Core.UnitOfWork;
 using PolicyManagement.Infrastructure.Repositories;
+using PolicyManagement.Core.Interfaces.Services;
+using PolicyManagement.Core.Services;
 
 namespace PolicyManagement.Infrastructure
 {
@@ -16,6 +18,7 @@ namespace PolicyManagement.Infrastructure
 
             services.AddScoped<IPolicyRepository, PolicyRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
+            services.AddScoped<IPolicyService, PolicyService>();
 
             return services;
         }
