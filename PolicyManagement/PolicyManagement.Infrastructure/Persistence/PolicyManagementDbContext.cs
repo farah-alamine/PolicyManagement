@@ -2,7 +2,7 @@
 using PolicyManagement.Core.Entities;
 using PolicyManagement.Core.Entities.Common;
 
-namespace PolicyManagement.Infrastructure.Data
+namespace PolicyManagement.Infrastructure.Persistence
 {
     public class PolicyManagementDbContext : DbContext
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PolicyManagement.Core.Interfaces.IRepositories;
+using PolicyManagement.Core.UnitOfWork;
 using PolicyManagement.Infrastructure.Repositories;
-using PolicyManagement.Infrastructure.UnitOfWork;
 
 namespace PolicyManagement.Infrastructure
 {
@@ -15,7 +15,7 @@ namespace PolicyManagement.Infrastructure
                 typeof(GenericRepository<>));
 
             services.AddScoped<IPolicyRepository, PolicyRepository>();
-            services.AddScoped<IUnitOfWork, UnitOfWork. UnitOfWork>();
+            services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
 
             return services;
         }

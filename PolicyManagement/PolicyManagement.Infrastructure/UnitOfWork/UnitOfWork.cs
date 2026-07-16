@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
-using PolicyManagement.Infrastructure.Data;
+using PolicyManagement.Core.UnitOfWork;
+using PolicyManagement.Infrastructure.Persistence;
 
 namespace PolicyManagement.Infrastructure.UnitOfWork
 {

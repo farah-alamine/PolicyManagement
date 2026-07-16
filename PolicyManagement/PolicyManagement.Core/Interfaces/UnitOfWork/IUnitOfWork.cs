@@ -1,4 +1,4 @@
-﻿namespace PolicyManagement.Infrastructure.UnitOfWork
+﻿namespace PolicyManagement.Core.UnitOfWork
 {
     public interface IUnitOfWork
     {

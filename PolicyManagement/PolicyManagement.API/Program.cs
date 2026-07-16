@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PolicyManagement.Infrastructure.Data;
+using PolicyManagement.Infrastructure.Persistence;
 using PolicyManagement.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
