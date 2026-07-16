@@ -22,8 +22,4 @@
     <ProjectReference Include="..\PolicyManagement.Core\PolicyManagement.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>

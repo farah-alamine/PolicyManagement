@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PolicyManagement.Infrastructure.Data;
+using PolicyManagement.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<PolicyManagementDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddInfrastructureServices();
 
 var app = builder.Build();
 
