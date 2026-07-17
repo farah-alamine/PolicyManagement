@@ -1,6 +1,9 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using PolicyManagement.Infrastructure.Persistence;
+using PolicyManagement.API.Extensions;
+using PolicyManagement.Core.Validators.Policies;
 using PolicyManagement.Infrastructure;
+using PolicyManagement.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,11 +16,14 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<PolicyManagementDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddValidatorsFromAssemblyContaining<
+    CreatePolicyRequestValidator>();
 builder.Services.AddInfrastructureServices();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseGlobalExceptionHandling();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

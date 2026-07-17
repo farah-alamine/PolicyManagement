@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using PolicyManagement.Core.Interfaces.Services;
 using PolicyManagement.Core.Models.Requests.Policies;
 using PolicyManagement.Core.Models.Responses.Common;
@@ -12,10 +13,16 @@ namespace PolicyManagement.API.Controllers
     public class PoliciesController : ControllerBase
     {
         private readonly IPolicyService _policyService;
+        private readonly IValidator<CreatePolicyRequest> _createPolicyValidator;
+        private readonly IValidator<UpdatePolicyRequest> _updatePolicyValidator;
 
-        public PoliciesController(IPolicyService policyService)
+        public PoliciesController(IPolicyService policyService,
+    IValidator<CreatePolicyRequest> createPolicyValidator,
+    IValidator<UpdatePolicyRequest> updatePolicyValidator)
         {
             _policyService = policyService;
+            _createPolicyValidator = createPolicyValidator;
+            _updatePolicyValidator = updatePolicyValidator;
         }
 
         [HttpGet]
@@ -68,6 +75,8 @@ namespace PolicyManagement.API.Controllers
             [FromBody] CreatePolicyRequest request,
             CancellationToken cancellationToken = default)
         {
+            await _createPolicyValidator.ValidateAndThrowAsync(request, cancellationToken);
+
             var policy = await _policyService.CreateAsync(
                 request,
                 cancellationToken);
@@ -87,6 +96,8 @@ namespace PolicyManagement.API.Controllers
             [FromBody] UpdatePolicyRequest request,
             CancellationToken cancellationToken = default)
         {
+            await _updatePolicyValidator.ValidateAndThrowAsync(request, cancellationToken);
+
             var updated = await _policyService.UpdateAsync(
                 guid,
                 request,

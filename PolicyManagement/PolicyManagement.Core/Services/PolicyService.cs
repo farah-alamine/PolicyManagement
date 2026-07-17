@@ -1,4 +1,5 @@
 ﻿using PolicyManagement.Core.Entities;
+using PolicyManagement.Core.Exceptions;
 using PolicyManagement.Core.Interfaces.IRepositories;
 using PolicyManagement.Core.Interfaces.Services;
 using PolicyManagement.Core.Models.DTOs;
@@ -78,12 +79,6 @@ namespace PolicyManagement.Core.Services
             CreatePolicyRequest request,
             CancellationToken cancellationToken = default)
         {
-            ValidateRequest(
-                request.Name,
-                request.PolicyTypeGuid,
-                request.EffectiveDate,
-                request.ExpiryDate);
-
             var policyType =
                 await _policyTypeRepository.GetByRecordGuidAsync(
                     request.PolicyTypeGuid,
@@ -91,9 +86,7 @@ namespace PolicyManagement.Core.Services
 
             if (policyType is null)
             {
-                throw new ArgumentException(
-                    "The selected policy type does not exist.",
-                    nameof(request.PolicyTypeGuid));
+                throw new BadRequestException("The selected policy type does not exist.");
             }
 
             var policy = new Policy
@@ -146,12 +139,6 @@ namespace PolicyManagement.Core.Services
             if (id == Guid.Empty)
                 return false;
 
-            ValidateRequest(
-                request.Name,
-                request.PolicyTypeGuid,
-                request.EffectiveDate,
-                request.ExpiryDate);
-
             var policy =
                 await _policyRepository.GetByRecordGuidAsync(
                     id,
@@ -167,9 +154,7 @@ namespace PolicyManagement.Core.Services
 
             if (policyType is null)
             {
-                throw new ArgumentException(
-                    "The selected policy type does not exist.",
-                    nameof(request.PolicyTypeGuid));
+                throw new BadRequestException("The selected policy type does not exist.");
             }
 
             policy.Name = request.Name.Trim();
@@ -239,29 +224,6 @@ namespace PolicyManagement.Core.Services
 
 
         #region Helper Methods
-        private static void ValidateRequest(string name, Guid policyTypeId, DateTime effectiveDate, DateTime expiryDate)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(
-                    "Policy name is required.",
-                    nameof(name));
-            }
-
-            if (policyTypeId == Guid.Empty)
-            {
-                throw new ArgumentException(
-                    "Policy type is required.",
-                    nameof(policyTypeId));
-            }
-
-            if (expiryDate <= effectiveDate)
-            {
-                throw new ArgumentException(
-                    "Expiry date must be later than the effective date.");
-            }
-        }
-
         private static string? NormalizeOptionalText(string? value)
         {
             return string.IsNullOrWhiteSpace(value)
