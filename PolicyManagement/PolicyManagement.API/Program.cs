@@ -18,19 +18,31 @@ builder.Services.AddDbContext<PolicyManagementDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddValidatorsFromAssemblyContaining<
     CreatePolicyRequestValidator>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngular", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddInfrastructureServices();
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
+
 app.UseGlobalExceptionHandling();
+
+app.UseCors("AllowAngular");
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
