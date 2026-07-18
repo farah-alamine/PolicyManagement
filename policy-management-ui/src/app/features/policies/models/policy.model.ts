@@ -3,7 +3,8 @@ export interface Policy {
   name: string;
   description: string | null;
   effectiveDate: string;
-  expiryDate: string;
+  expiryDate: string; 
+  policyTypeGuid: string;
   policyTypeName: string;
   createdDate: string;
 }

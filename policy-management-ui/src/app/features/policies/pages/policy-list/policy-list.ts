@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Policy } from '../../models/policy.model';
 import { PolicyService } from '../../services/policy.service';
@@ -19,7 +18,7 @@ export class PolicyList implements OnInit {
   readonly policies = signal<Policy[]>([]);
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
-
+  readonly deletingPolicyGuid = signal<string | null>(null);
   ngOnInit(): void {
     this.loadPolicies();
   }
@@ -28,8 +27,7 @@ export class PolicyList implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    this.policyService.getPolicies().subscribe({
-      next: response => {
+this.policyService.getAll(1, 10).subscribe({      next: response => {
         this.policies.set(response.items);
         this.isLoading.set(false);
       },
@@ -40,4 +38,44 @@ export class PolicyList implements OnInit {
       }
     });
   }
+  deletePolicy(policy: Policy): void {
+  const confirmed = window.confirm(
+    `Are you sure you want to delete "${policy.name}"?`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  this.deletingPolicyGuid.set(policy.recordGuid);
+  this.errorMessage.set('');
+
+  this.policyService
+    .delete(policy.recordGuid)
+    .subscribe({
+      next: () => {
+        this.policies.update(currentPolicies =>
+          currentPolicies.filter(
+            currentPolicy =>
+              currentPolicy.recordGuid
+              !== policy.recordGuid
+          )
+        );
+
+        this.deletingPolicyGuid.set(null);
+      },
+      error: error => {
+        console.error(
+          'Failed to delete policy',
+          error
+        );
+
+        this.errorMessage.set(
+          'The policy could not be deleted.'
+        );
+
+        this.deletingPolicyGuid.set(null);
+      }
+    });
+}
 }

@@ -24,11 +24,11 @@ export const routes: Routes = [
       component: CreatePolicy
     },
     {
-      path: 'policies/:id',
+      path: 'policies/:guid',
       component: PolicyDetails
     },
     {
-      path: 'policies/:id/edit',
+      path: 'policies/:guid/edit',
       component: EditPolicy
     }
   ]

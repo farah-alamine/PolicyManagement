@@ -1,6 +1,24 @@
-<div class="container">
-  <app-page-header
-    title="Edit Policy"
-    description="Update the selected policy information."
+@if (isLoading()) {
+  <div class="text-center py-5">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">
+        Loading...
+      </span>
+    </div>
+  </div>
+}
+
+@if (errorMessage()) {
+  <div class="alert alert-danger">
+    {{ errorMessage() }}
+  </div>
+}
+
+@if (policy(); as currentPolicy) {
+  <app-policy-form
+    [policyTypes]="policyTypes()"
+    [initialValue]="currentPolicy"
+    [isSubmitting]="isSubmitting()"
+    (formSubmitted)="updatePolicy($event)"
   />
-</div>
+}

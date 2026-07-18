@@ -8,7 +8,7 @@ namespace PolicyManagement.API.Controllers
 {
 
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/policy-types")]
     public class PolicyTypeController : ControllerBase
     {
         private readonly IPolicyTypeService _policyTypeService;

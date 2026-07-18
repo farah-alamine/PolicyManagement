@@ -1,6 +1,63 @@
-<div class="container">
-  <app-page-header
-    title="Policy Details"
-    description="View the complete information for this policy."
-  />
-</div>
+<app-page-header
+  title="Policy Details"
+  description="View the selected policy information"
+>
+  <a
+    class="btn btn-outline-secondary"
+    routerLink="/policies"
+  >
+    Back to Policies
+  </a>
+</app-page-header>
+
+@if (isLoading()) {
+  <div class="text-center py-5">
+    <div
+      class="spinner-border"
+      role="status"
+    >
+      <span class="visually-hidden">
+        Loading...
+      </span>
+    </div>
+  </div>
+}
+
+@if (errorMessage()) {
+  <div class="alert alert-danger">
+    {{ errorMessage() }}
+  </div>
+}
+
+@if (policy(); as currentPolicy) {
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <dl class="row mb-0">
+        <dt class="col-sm-3">Name</dt>
+        <dd class="col-sm-9">
+          {{ currentPolicy.name }}
+        </dd>
+
+        <dt class="col-sm-3">Description</dt>
+        <dd class="col-sm-9">
+          {{ currentPolicy.description || '—' }}
+        </dd>
+
+        <dt class="col-sm-3">Policy Type</dt>
+        <dd class="col-sm-9">
+          {{ currentPolicy.policyTypeName }}
+        </dd>
+
+        <dt class="col-sm-3">Effective Date</dt>
+        <dd class="col-sm-9">
+          {{ currentPolicy.effectiveDate | date:'mediumDate' }}
+        </dd>
+
+        <dt class="col-sm-3">Expiry Date</dt>
+        <dd class="col-sm-9">
+          {{ currentPolicy.expiryDate | date:'mediumDate' }}
+        </dd>
+      </dl>
+    </div>
+  </div>
+}
