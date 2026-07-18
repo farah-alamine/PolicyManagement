@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PolicyManagement.Core.Interfaces.Services;
 using PolicyManagement.Core.Models.Requests.PolicyTypes;
@@ -9,6 +10,7 @@ namespace PolicyManagement.API.Controllers
 
     [ApiController]
     [Route("api/policy-types")]
+    [Authorize]
     public class PolicyTypeController : ControllerBase
     {
         private readonly IPolicyTypeService _policyTypeService;

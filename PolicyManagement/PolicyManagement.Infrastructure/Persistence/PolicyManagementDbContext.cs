@@ -20,6 +20,8 @@ namespace PolicyManagement.Infrastructure.Persistence
 
         public DbSet<Claim> Claims => Set<Claim>();
 
+        public DbSet<AppUser> AppUsers => Set<AppUser>();
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             SetAuditFields();
@@ -29,6 +31,34 @@ namespace PolicyManagement.Infrastructure.Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AppUser>(entity =>
+            {
+                entity.ToTable("Users");
+
+                entity.HasKey(user => user.Id);
+
+                entity.Property(user => user.FullName)
+                    .HasMaxLength(150)
+                    .IsRequired();
+
+                entity.Property(user => user.Email)
+                    .HasMaxLength(200)
+                    .IsRequired();
+
+                entity.HasIndex(user => user.Email)
+                    .IsUnique();
+
+                entity.Property(user => user.PasswordHash)
+                    .IsRequired();
+
+                entity.Property(user => user.Role)
+                    .HasMaxLength(50)
+                    .IsRequired();
+
+                entity.Property(user => user.IsActive)
+                    .IsRequired();
+            });
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.ApplyConfigurationsFromAssembly(
