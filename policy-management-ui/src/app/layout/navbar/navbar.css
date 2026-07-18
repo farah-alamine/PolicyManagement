@@ -1,0 +1,25 @@
+.user-information {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.user-role {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+@media (max-width: 991.98px) {
+  .user-information {
+    margin: 12px 0;
+  }
+
+  .navbar-nav {
+    align-items: flex-start !important;
+  }
+}
