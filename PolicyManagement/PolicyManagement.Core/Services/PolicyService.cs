@@ -1,6 +1,6 @@
 ﻿using PolicyManagement.Core.Entities;
 using PolicyManagement.Core.Exceptions;
-using PolicyManagement.Core.Interfaces.IRepositories;
+using PolicyManagement.Core.Interfaces.Repositories;
 using PolicyManagement.Core.Interfaces.Services;
 using PolicyManagement.Core.Models.DTOs;
 using PolicyManagement.Core.Models.Requests.Policies;

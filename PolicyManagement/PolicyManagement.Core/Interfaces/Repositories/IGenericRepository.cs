@@ -1,7 +1,7 @@
 ﻿using PolicyManagement.Core.Entities.Common;
 using System.Linq.Expressions;
 
-namespace PolicyManagement.Core.Interfaces.IRepositories
+namespace PolicyManagement.Core.Interfaces.Repositories
 {
     public interface IGenericRepository<T>
      where T : BaseEntity

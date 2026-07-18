@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PolicyManagement.Core.Entities;
-using PolicyManagement.Core.Interfaces.IRepositories;
+using PolicyManagement.Core.Interfaces.Repositories;
 using PolicyManagement.Infrastructure.Persistence;
 
 namespace PolicyManagement.Infrastructure.Repositories

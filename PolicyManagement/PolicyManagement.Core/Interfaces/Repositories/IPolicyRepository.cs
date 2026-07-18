@@ -1,6 +1,6 @@
 ﻿using PolicyManagement.Core.Entities;
 
-namespace PolicyManagement.Core.Interfaces.IRepositories
+namespace PolicyManagement.Core.Interfaces.Repositories
 {
     public interface IPolicyRepository : IGenericRepository<Policy>
     {
