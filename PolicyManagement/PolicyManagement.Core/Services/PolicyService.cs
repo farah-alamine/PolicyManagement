@@ -14,15 +14,21 @@ namespace PolicyManagement.Core.Services
     {
         private readonly IPolicyRepository _policyRepository;
         private readonly IGenericRepository<PolicyType> _policyTypeRepository;
+        private readonly IGenericRepository<PolicyMember> _policyMemberRepository;
+        private readonly IGenericRepository<Claim> _claimRepository;
         private readonly IUnitOfWork _unitOfWork;
 
         public PolicyService(
             IPolicyRepository policyRepository,
             IGenericRepository<PolicyType> policyTypeRepository,
+            IGenericRepository<PolicyMember> policyMemberRepository,
+            IGenericRepository<Claim> claimRepository,
             IUnitOfWork unitOfWork)
         {
             _policyRepository = policyRepository;
             _policyTypeRepository = policyTypeRepository;
+            _policyMemberRepository = policyMemberRepository;
+            _claimRepository = claimRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -76,8 +82,8 @@ namespace PolicyManagement.Core.Services
         }
 
         public async Task<PolicyDetailsResponse> CreateAsync(
-            CreatePolicyRequest request,
-            CancellationToken cancellationToken = default)
+        CreatePolicyRequest request,
+        CancellationToken cancellationToken = default)
         {
             var policyType =
                 await _policyTypeRepository.GetByRecordGuidAsync(
@@ -86,7 +92,8 @@ namespace PolicyManagement.Core.Services
 
             if (policyType is null)
             {
-                throw new BadRequestException("The selected policy type does not exist.");
+                throw new BadRequestException(
+                    "The selected policy type does not exist.");
             }
 
             var policy = new Policy
@@ -95,7 +102,29 @@ namespace PolicyManagement.Core.Services
                 Description = NormalizeOptionalText(request.Description),
                 EffectiveDate = request.EffectiveDate,
                 ExpiryDate = request.ExpiryDate,
-                PolicyTypeId = policyType.Id
+                PolicyTypeId = policyType.Id,
+
+                Members = request.Members
+                    .Select(member => new PolicyMember
+                    {
+                        FirstName = member.FirstName.Trim(),
+                        LastName = member.LastName.Trim(),
+                        DateOfBirth = member.DateOfBirth,
+                        RelationshipToPolicyHolder =
+                            member.RelationshipToPolicyHolder.Trim()
+                    })
+                    .ToList(),
+
+                Claims = request.Claims
+                    .Select(claim => new Claim
+                    {
+                        ClaimNumber = claim.ClaimNumber.Trim(),
+                        ClaimDate = claim.ClaimDate,
+                        Amount = claim.Amount,
+                        Status = claim.Status,
+                        Description = NormalizeOptionalText(claim.Description)
+                    })
+                    .ToList()
             };
 
             await _unitOfWork.BeginTransactionAsync(cancellationToken);
@@ -107,6 +136,7 @@ namespace PolicyManagement.Core.Services
                     cancellationToken);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
+
                 await _unitOfWork.CommitTransactionAsync(cancellationToken);
             }
             catch
@@ -132,12 +162,14 @@ namespace PolicyManagement.Core.Services
         }
 
         public async Task<bool> UpdateAsync(
-            Guid id,
-            UpdatePolicyRequest request,
-            CancellationToken cancellationToken = default)
+         Guid id,
+         UpdatePolicyRequest request,
+         CancellationToken cancellationToken = default)
         {
             if (id == Guid.Empty)
+            {
                 return false;
+            }
 
             var policy =
                 await _policyRepository.GetByRecordGuidAsync(
@@ -145,7 +177,9 @@ namespace PolicyManagement.Core.Services
                     cancellationToken);
 
             if (policy is null)
+            {
                 return false;
+            }
 
             var policyType =
                 await _policyTypeRepository.GetByRecordGuidAsync(
@@ -154,7 +188,8 @@ namespace PolicyManagement.Core.Services
 
             if (policyType is null)
             {
-                throw new BadRequestException("The selected policy type does not exist.");
+                throw new BadRequestException(
+                    "The selected policy type does not exist.");
             }
 
             policy.Name = request.Name.Trim();
@@ -167,6 +202,61 @@ namespace PolicyManagement.Core.Services
 
             try
             {
+                var existingMembers =
+                    await _policyMemberRepository.FindAsync(
+                        member => member.PolicyId == policy.Id,
+                        cancellationToken);
+
+                foreach (var member in existingMembers)
+                {
+                    _policyMemberRepository.Delete(member);
+                }
+
+                var existingClaims =
+                    await _claimRepository.FindAsync(
+                        claim => claim.PolicyId == policy.Id,
+                        cancellationToken);
+
+                foreach (var claim in existingClaims)
+                {
+                    _claimRepository.Delete(claim);
+                }
+
+                foreach (var memberRequest in request.Members)
+                {
+                    var member = new PolicyMember
+                    {
+                        FirstName = memberRequest.FirstName.Trim(),
+                        LastName = memberRequest.LastName.Trim(),
+                        DateOfBirth = memberRequest.DateOfBirth,
+                        RelationshipToPolicyHolder =
+                            memberRequest.RelationshipToPolicyHolder.Trim(),
+                        PolicyId = policy.Id
+                    };
+
+                    await _policyMemberRepository.AddAsync(
+                        member,
+                        cancellationToken);
+                }
+
+                foreach (var claimRequest in request.Claims)
+                {
+                    var claim = new Claim
+                    {
+                        ClaimNumber = claimRequest.ClaimNumber.Trim(),
+                        ClaimDate = claimRequest.ClaimDate,
+                        Amount = claimRequest.Amount,
+                        Status = claimRequest.Status,
+                        Description =
+                            NormalizeOptionalText(claimRequest.Description),
+                        PolicyId = policy.Id
+                    };
+
+                    await _claimRepository.AddAsync(
+                        claim,
+                        cancellationToken);
+                }
+
                 _policyRepository.Update(policy);
 
                 await _unitOfWork.SaveChangesAsync(cancellationToken);

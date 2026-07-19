@@ -1,4 +1,7 @@
-﻿namespace PolicyManagement.Core.Models.Requests.Policies
+﻿using PolicyManagement.Core.Models.Requests.Claims;
+using PolicyManagement.Core.Models.Requests.PolicyMember;
+
+namespace PolicyManagement.Core.Models.Requests.Policies
 {
     public class CreatePolicyRequest
     {
@@ -11,5 +14,9 @@
         public DateTime ExpiryDate { get; set; }
 
         public Guid PolicyTypeGuid { get; set; }
+       
+        public List<PolicyMemberRequest> Members { get; set; } = [];
+
+        public List<ClaimRequest> Claims { get; set; } = [];
     }
 }

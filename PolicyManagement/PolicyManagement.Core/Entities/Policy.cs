@@ -9,8 +9,8 @@ namespace PolicyManagement.Core.Entities
         public DateTime EffectiveDate { get; set; }
         public DateTime ExpiryDate { get; set; }
         public int PolicyTypeId { get; set; }
-        public IEnumerable<PolicyMember> Members { get; set; } = new List<PolicyMember>();
-        public IEnumerable<Claim> Claims { get; set; } = new List<Claim>();
+        public ICollection<PolicyMember> Members { get; set; } = new List<PolicyMember>();
+        public ICollection<Claim> Claims { get; set; } = new List<Claim>();
 
         #region Virtual
         public virtual PolicyType PolicyType { get; set; } = null!;

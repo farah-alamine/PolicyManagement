@@ -1,15 +1,10 @@
-﻿namespace PolicyManagement.Core.Models.DTOs
+﻿namespace PolicyManagement.Core.Models.Requests.PolicyMember
 {
-    public class PolicyMemberDto
+    public class PolicyMemberRequest
     {
-        public Guid RecordGuid { get; set; }
-
         public string FirstName { get; set; } = string.Empty;
-
         public string LastName { get; set; } = string.Empty;
-
         public DateTime DateOfBirth { get; set; }
-
         public string RelationshipToPolicyHolder { get; set; } = string.Empty;
     }
 }
