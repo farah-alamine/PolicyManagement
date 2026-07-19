@@ -30,34 +30,229 @@
 }
 
 @if (policy(); as currentPolicy) {
-  <div class="card shadow-sm">
+  <div class="card shadow-sm mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">
+        Policy Information
+      </h5>
+    </div>
+
     <div class="card-body">
       <dl class="row mb-0">
-        <dt class="col-sm-3">Name</dt>
+        <dt class="col-sm-3">
+          Name
+        </dt>
+
         <dd class="col-sm-9">
           {{ currentPolicy.name }}
         </dd>
 
-        <dt class="col-sm-3">Description</dt>
+        <dt class="col-sm-3">
+          Description
+        </dt>
+
         <dd class="col-sm-9">
           {{ currentPolicy.description || '—' }}
         </dd>
 
-        <dt class="col-sm-3">Policy Type</dt>
+        <dt class="col-sm-3">
+          Policy Type
+        </dt>
+
         <dd class="col-sm-9">
           {{ currentPolicy.policyTypeName }}
         </dd>
 
-        <dt class="col-sm-3">Effective Date</dt>
+        <dt class="col-sm-3">
+          Effective Date
+        </dt>
+
         <dd class="col-sm-9">
           {{ currentPolicy.effectiveDate | date:'mediumDate' }}
         </dd>
 
-        <dt class="col-sm-3">Expiry Date</dt>
+        <dt class="col-sm-3">
+          Expiry Date
+        </dt>
+
         <dd class="col-sm-9">
           {{ currentPolicy.expiryDate | date:'mediumDate' }}
         </dd>
       </dl>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div
+      class="card-header d-flex justify-content-between align-items-center"
+    >
+      <h5 class="mb-0">
+        Policy Members
+      </h5>
+
+      <span class="badge text-bg-secondary">
+        {{ currentPolicy.members.length }}
+      </span>
+    </div>
+
+    <div class="card-body p-0">
+      @if (currentPolicy.members.length === 0) {
+        <div class="p-4 text-muted">
+          No members are associated with this policy.
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0">
+            <thead>
+              <tr>
+                <th>
+                  First Name
+                </th>
+
+                <th>
+                  Last Name
+                </th>
+
+                <th>
+                  Date of Birth
+                </th>
+
+                <th>
+                  Relationship
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (
+                member of currentPolicy.members;
+                track member.recordGuid
+              ) {
+                <tr>
+                  <td>
+                    {{ member.firstName }}
+                  </td>
+
+                  <td>
+                    {{ member.lastName }}
+                  </td>
+
+                  <td>
+                    {{ member.dateOfBirth | date:'mediumDate' }}
+                  </td>
+
+                  <td>
+                    {{ member.relationshipToPolicyHolder }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div
+      class="card-header d-flex justify-content-between align-items-center"
+    >
+      <h5 class="mb-0">
+        Claims
+      </h5>
+
+      <span class="badge text-bg-secondary">
+        {{ currentPolicy.claims.length }}
+      </span>
+    </div>
+
+    <div class="card-body p-0">
+      @if (currentPolicy.claims.length === 0) {
+        <div class="p-4 text-muted">
+          No claims are associated with this policy.
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table table-striped table-hover mb-0">
+            <thead>
+              <tr>
+                <th>
+                  Claim Number
+                </th>
+
+                <th>
+                  Claim Date
+                </th>
+
+                <th>
+                  Amount
+                </th>
+
+                <th>
+                  Status
+                </th>
+
+                <th>
+                  Description
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (
+                claim of currentPolicy.claims;
+                track claim.recordGuid
+              ) {
+                <tr>
+                  <td>
+                    {{ claim.claimNumber }}
+                  </td>
+
+                  <td>
+                    {{ claim.claimDate | date:'mediumDate' }}
+                  </td>
+
+                  <td>
+                    {{ claim.amount | number:'1.2-2' }}
+                  </td>
+
+                  <td>
+                    @switch (claim.status) {
+                      @case (1) {
+                        <span class="badge text-bg-warning">
+                          Pending
+                        </span>
+                      }
+
+                      @case (2) {
+                        <span class="badge text-bg-success">
+                          Approved
+                        </span>
+                      }
+
+                      @case (3) {
+                        <span class="badge text-bg-danger">
+                          Rejected
+                        </span>
+                      }
+
+                      @default {
+                        <span class="badge text-bg-secondary">
+                          Unknown
+                        </span>
+                      }
+                    }
+                  </td>
+
+                  <td>
+                    {{ claim.description || '—' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
     </div>
   </div>
 }

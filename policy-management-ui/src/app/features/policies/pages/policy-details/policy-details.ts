@@ -1,6 +1,19 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import {
+  DatePipe,
+  DecimalPipe
+} from '@angular/common';
+
+import {
+  Component,
+  inject,
+  OnInit,
+  signal
+} from '@angular/core';
+
+import {
+  ActivatedRoute,
+  RouterLink
+} from '@angular/router';
 
 import { Policy } from '../../models/policy.model';
 import { PolicyService } from '../../services/policy.service';
@@ -11,6 +24,7 @@ import { PageHeader } from '../../../../shared/components/page-header/page-heade
   standalone: true,
   imports: [
     DatePipe,
+    DecimalPipe,
     RouterLink,
     PageHeader
   ],
@@ -34,7 +48,10 @@ export class PolicyDetails implements OnInit {
       this.route.snapshot.paramMap.get('guid');
 
     if (!guid) {
-      this.errorMessage.set('Invalid policy identifier.');
+      this.errorMessage.set(
+        'Invalid policy identifier.'
+      );
+
       return;
     }
 
@@ -46,8 +63,12 @@ export class PolicyDetails implements OnInit {
         this.policy.set(policy);
         this.isLoading.set(false);
       },
+
       error: error => {
-        console.error('Failed to load policy', error);
+        console.error(
+          'Failed to load policy',
+          error
+        );
 
         this.errorMessage.set(
           'The policy could not be loaded.'
