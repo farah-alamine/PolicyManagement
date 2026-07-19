@@ -20,8 +20,4 @@
     <ProjectReference Include="..\PolicyManagement.Infrastructure\PolicyManagement.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Authentication\" />
-  </ItemGroup>
-
 </Project>

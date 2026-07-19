@@ -12,7 +12,75 @@
   </app-page-header>
 
   <div class="card border-0 shadow-sm">
+    <div class="card-body border-bottom">
+      <div
+        class="row g-3 align-items-center"
+      >
+        <div class="col-md-8">
+          <div class="input-group">
+            <span class="input-group-text">
+              Search
+            </span>
+
+            <input
+              type="search"
+              class="form-control"
+              placeholder="Search by name, description, or policy type"
+              aria-label="Search policies"
+              [formControl]="searchControl"
+            >
+
+            @if (searchControl.value) {
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                (click)="clearSearch()"
+              >
+                Clear
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div
+            class="d-flex align-items-center justify-content-md-end gap-2"
+          >
+            <label
+              for="pageSize"
+              class="text-nowrap"
+            >
+              Items per page
+            </label>
+
+            <select
+              id="pageSize"
+              class="form-select"
+              style="width: auto"
+              [value]="pageSize()"
+              (change)="changePageSize($event)"
+            >
+              @for (
+                option of pageSizeOptions;
+                track option
+              ) {
+                <option [value]="option">
+                  {{ option }}
+                </option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card-body p-0">
+      @if (errorMessage()) {
+        <div class="alert alert-danger m-3">
+          {{ errorMessage() }}
+        </div>
+      }
+
       @if (isLoading()) {
         <div
           class="d-flex justify-content-center align-items-center py-5"
@@ -26,36 +94,71 @@
             </span>
           </div>
         </div>
-      } @else if (errorMessage()) {
-        <div class="alert alert-danger m-3 mb-0">
-          {{ errorMessage() }}
-        </div>
-      } @else if (policies().length === 0) {
-        <div class="text-center py-5">
-          <h2 class="h5">No policies found</h2>
+      } @else if (
+        policies().length === 0
+      ) {
+        <div class="text-center py-5 px-3">
+          <h2 class="h5">
+            No policies found
+          </h2>
 
-          <p class="text-muted mb-3">
-            Create your first policy to get started.
-          </p>
+          @if (searchTerm()) {
+            <p class="text-muted mb-3">
+              No policies match
+              “{{ searchTerm() }}”.
+            </p>
 
-          <a
-            class="btn btn-primary"
-            routerLink="/policies/create"
-          >
-            Add Policy
-          </a>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="clearSearch()"
+            >
+              Clear Search
+            </button>
+          } @else {
+            <p class="text-muted mb-3">
+              Create your first policy to
+              get started.
+            </p>
+
+            <a
+              class="btn btn-primary"
+              routerLink="/policies/create"
+            >
+              Add Policy
+            </a>
+          }
         </div>
       } @else {
         <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0">
+          <table
+            class="table table-hover align-middle mb-0"
+          >
             <thead class="table-light">
               <tr>
-                <th class="px-4 py-3">Name</th>
-                <th class="py-3">Policy Type</th>
-                <th class="py-3">Effective Date</th>
-                <th class="py-3">Expiry Date</th>
-                <th class="py-3">Created Date</th>
-                <th class="px-4 py-3 text-end">
+                <th class="px-4 py-3">
+                  Name
+                </th>
+
+                <th class="py-3">
+                  Policy Type
+                </th>
+
+                <th class="py-3">
+                  Effective Date
+                </th>
+
+                <th class="py-3">
+                  Expiry Date
+                </th>
+
+                <th class="py-3">
+                  Created Date
+                </th>
+
+                <th
+                  class="px-4 py-3 text-end"
+                >
                   Actions
                 </th>
               </tr>
@@ -72,16 +175,26 @@
                       {{ policy.name }}
                     </div>
 
-                    @if (policy.description) {
-                      <small class="text-muted">
-                        {{ policy.description }}
+                    @if (
+                      policy.description
+                    ) {
+                      <small
+                        class="text-muted"
+                      >
+                        {{
+                          policy.description
+                        }}
                       </small>
                     }
                   </td>
 
                   <td>
-                    <span class="badge text-bg-secondary">
-                      {{ policy.policyTypeName }}
+                    <span
+                      class="badge text-bg-secondary"
+                    >
+                      {{
+                        policy.policyTypeName
+                      }}
                     </span>
                   </td>
 
@@ -106,7 +219,9 @@
                     }}
                   </td>
 
-                  <td class="px-4 text-end">
+                  <td
+                    class="px-4 text-end text-nowrap"
+                  >
                     <a
                       class="btn btn-sm btn-outline-secondary me-2"
                       [routerLink]="[
@@ -133,13 +248,17 @@
                       class="btn btn-sm btn-outline-danger"
                       [disabled]="
                         deletingPolicyGuid()
-                          === policy.recordGuid
+                          ===
+                        policy.recordGuid
                       "
-                      (click)="deletePolicy(policy)"
+                      (click)="
+                        deletePolicy(policy)
+                      "
                     >
                       @if (
                         deletingPolicyGuid()
-                          === policy.recordGuid
+                          ===
+                        policy.recordGuid
                       ) {
                         <span
                           class="spinner-border spinner-border-sm me-1"
@@ -159,5 +278,93 @@
         </div>
       }
     </div>
+
+    @if (
+      !isLoading() &&
+      totalCount() > 0
+    ) {
+      <div
+        class="card-footer bg-white d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
+      >
+        <div class="text-muted small">
+          Showing page
+          {{ pageNumber() }}
+          of
+          {{ totalPages() }}
+          ·
+          {{ totalCount() }}
+          total
+          @if (totalCount() === 1) {
+            policy
+          } @else {
+            policies
+          }
+        </div>
+
+        @if (totalPages() > 1) {
+          <nav aria-label="Policy pagination">
+            <ul class="pagination mb-0">
+              <li
+                class="page-item"
+                [class.disabled]="
+                  pageNumber() === 1
+                "
+              >
+                <button
+                  type="button"
+                  class="page-link"
+                  [disabled]="
+                    pageNumber() === 1
+                  "
+                  (click)="previousPage()"
+                >
+                  Previous
+                </button>
+              </li>
+
+              @for (
+                page of getVisiblePages();
+                track page
+              ) {
+                <li
+                  class="page-item"
+                  [class.active]="
+                    page === pageNumber()
+                  "
+                >
+                  <button
+                    type="button"
+                    class="page-link"
+                    (click)="goToPage(page)"
+                  >
+                    {{ page }}
+                  </button>
+                </li>
+              }
+
+              <li
+                class="page-item"
+                [class.disabled]="
+                  pageNumber()
+                    === totalPages()
+                "
+              >
+                <button
+                  type="button"
+                  class="page-link"
+                  [disabled]="
+                    pageNumber()
+                      === totalPages()
+                  "
+                  (click)="nextPage()"
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
+        }
+      </div>
+    }
   </div>
 </div>

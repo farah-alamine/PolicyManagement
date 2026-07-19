@@ -29,16 +29,18 @@ namespace PolicyManagement.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(
-            typeof(PagedResponse<PolicyResponse>),
-            StatusCodes.Status200OK)]
+          typeof(PagedResponse<PolicyResponse>),
+          StatusCodes.Status200OK)]
         public async Task<ActionResult<PagedResponse<PolicyResponse>>> GetAll(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10,
-            CancellationToken cancellationToken = default)
+          [FromQuery] int pageNumber = 1,
+          [FromQuery] int pageSize = 10,
+          [FromQuery] string? searchTerm = null,
+          CancellationToken cancellationToken = default)
         {
             var result = await _policyService.GetPagedAsync(
                 pageNumber,
                 pageSize,
+                searchTerm,
                 cancellationToken);
 
             return Ok(result);

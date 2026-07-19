@@ -7,6 +7,7 @@ namespace PolicyManagement.Core.Interfaces.Repositories
         Task<(IReadOnlyList<Policy> Items, int TotalCount)> GetPagedAsync(
             int pageNumber,
             int pageSize,
+            string? searchTerm,
             CancellationToken cancellationToken = default);
 
         Task<Policy?> GetDetailsByRecordGuidAsync(

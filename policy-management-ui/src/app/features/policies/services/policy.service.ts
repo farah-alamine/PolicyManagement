@@ -16,19 +16,29 @@ export class PolicyService {
   private readonly apiUrl =
     `${environment.apiUrl}/policies`;
 
-  getAll(
-    pageNumber: number,
-    pageSize: number
-  ): Observable<PagedResponse<Policy>> {
-    const params = new HttpParams()
-      .set('pageNumber', pageNumber)
-      .set('pageSize', pageSize);
+getAll(
+  pageNumber: number,
+  pageSize: number,
+  searchTerm?: string
+): Observable<PagedResponse<Policy>> {
+  let params = new HttpParams()
+    .set('pageNumber', pageNumber.toString())
+    .set('pageSize', pageSize.toString());
 
-    return this.http.get<PagedResponse<Policy>>(
-      this.apiUrl,
-      { params }
+  const normalizedSearchTerm = searchTerm?.trim();
+
+  if (normalizedSearchTerm) {
+    params = params.set(
+      'searchTerm',
+      normalizedSearchTerm
     );
   }
+
+  return this.http.get<PagedResponse<Policy>>(
+    this.apiUrl,
+    { params }
+  );
+}
 
   getById(recordGuid: string): Observable<Policy> {
   return this.http.get<Policy>(

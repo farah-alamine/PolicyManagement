@@ -7,9 +7,10 @@ namespace PolicyManagement.Core.Interfaces.Services
     public interface IPolicyService
     {
         Task<PagedResponse<PolicyResponse>> GetPagedAsync(
-            int pageNumber,
-            int pageSize,
-            CancellationToken cancellationToken = default);
+        int pageNumber,
+        int pageSize,
+        string? searchTerm,
+        CancellationToken cancellationToken = default);
 
         Task<PolicyDetailsResponse?> GetByIdAsync(
             Guid id,

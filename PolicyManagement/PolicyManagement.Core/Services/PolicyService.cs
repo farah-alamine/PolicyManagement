@@ -33,9 +33,10 @@ namespace PolicyManagement.Core.Services
         }
 
         public async Task<PagedResponse<PolicyResponse>> GetPagedAsync(
-            int pageNumber,
-            int pageSize,
-            CancellationToken cancellationToken = default)
+      int pageNumber,
+      int pageSize,
+      string? searchTerm,
+      CancellationToken cancellationToken = default)
         {
             pageNumber = pageNumber < 1
                 ? 1
@@ -45,9 +46,14 @@ namespace PolicyManagement.Core.Services
                 ? 10
                 : pageSize;
 
+            searchTerm = string.IsNullOrWhiteSpace(searchTerm)
+                ? null
+                : searchTerm.Trim();
+
             var result = await _policyRepository.GetPagedAsync(
                 pageNumber,
                 pageSize,
+                searchTerm,
                 cancellationToken);
 
             return new PagedResponse<PolicyResponse>

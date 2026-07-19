@@ -15,16 +15,35 @@ namespace PolicyManagement.Infrastructure.Repositories
         public async Task<(IReadOnlyList<Policy> Items, int TotalCount)> GetPagedAsync(
             int pageNumber,
             int pageSize,
+            string? searchTerm,
             CancellationToken cancellationToken = default)
         {
             var query = Context.Policies
                 .AsNoTracking()
                 .Include(x => x.PolicyType)
-                .OrderByDescending(x => x.CreatedDate);
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var normalizedSearchTerm = searchTerm.Trim().ToLower();
+
+                query = query.Where(policy =>
+                    policy.Name.ToLower().Contains(normalizedSearchTerm) ||
+                    (
+                        policy.Description != null &&
+                        policy.Description
+                            .ToLower()
+                            .Contains(normalizedSearchTerm)
+                    ) ||
+                    policy.PolicyType.Name
+                        .ToLower()
+                        .Contains(normalizedSearchTerm));
+            }
 
             var totalCount = await query.CountAsync(cancellationToken);
 
             var items = await query
+                .OrderByDescending(x => x.CreatedDate)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync(cancellationToken);
