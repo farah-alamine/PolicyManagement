@@ -97,7 +97,9 @@
       } @else if (
         policies().length === 0
       ) {
-        <div class="text-center py-5 px-3">
+        <div
+        class="empty-state d-flex flex-column justify-content-center align-items-center text-center py-5 px-3"
+        >
           <h2 class="h5">
             No policies found
           </h2>
@@ -178,13 +180,12 @@
                     @if (
                       policy.description
                     ) {
-                      <small
-                        class="text-muted"
-                      >
-                        {{
-                          policy.description
-                        }}
-                      </small>
+                     <small
+                      class="text-muted policy-description"
+                      [title]="policy.description"
+                    >
+                      {{ policy.description }}
+                    </small>
                     }
                   </td>
 
@@ -219,9 +220,7 @@
                     }}
                   </td>
 
-                  <td
-                    class="px-4 text-end text-nowrap"
-                  >
+                 <td class="px-4 text-end text-nowrap actions">
                     <a
                       class="btn btn-sm btn-outline-secondary me-2"
                       [routerLink]="[

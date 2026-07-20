@@ -13,13 +13,13 @@ namespace PolicyManagement.Infrastructure.Services
     public class AuthenticationService
         : IAuthenticationService
     {
-        private readonly PolicyManagementDbContext _dbContext;
+        private readonly AuthenticationDbContext _dbContext;
         private readonly IPasswordHasher<AppUser> _passwordHasher;
         private readonly IJwtTokenService _jwtTokenService;
         private readonly JwtSettings _jwtSettings;
 
         public AuthenticationService(
-            PolicyManagementDbContext dbContext,
+            AuthenticationDbContext dbContext,
             IPasswordHasher<AppUser> passwordHasher,
             IJwtTokenService jwtTokenService,
             IOptions<JwtSettings> jwtSettings)
@@ -39,13 +39,17 @@ namespace PolicyManagement.Infrastructure.Services
                 .ToLowerInvariant();
 
             var user = await _dbContext.AppUsers
-                .FirstOrDefaultAsync(
-                    currentUser =>
-                        currentUser.Email.ToLower()
-                            == normalizedEmail,
-                    cancellationToken);
+          .Include(currentUser => currentUser.Tenant)
+          .FirstOrDefaultAsync(
+              currentUser =>
+                  currentUser.Email.ToLower()
+                      == normalizedEmail,
+              cancellationToken);
 
-            if (user is null || !user.IsActive)
+            if (
+            user is null ||
+            !user.IsActive ||
+            !user.Tenant.IsActive)
             {
                 return null;
             }

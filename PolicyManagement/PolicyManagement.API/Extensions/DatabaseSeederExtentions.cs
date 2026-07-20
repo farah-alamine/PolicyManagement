@@ -12,7 +12,7 @@ namespace PolicyManagement.API.Extensions
             using var scope = serviceProvider.CreateScope();
 
             var dbContext = scope.ServiceProvider
-                .GetRequiredService<PolicyManagementDbContext>();
+                .GetRequiredService<AuthenticationDbContext>();
 
             var passwordHasher = scope.ServiceProvider
                 .GetRequiredService<IPasswordHasher<AppUser>>();

@@ -4,10 +4,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PolicyManagement.API.Extensions;
+using PolicyManagement.Core.Interfaces.Services;
 using PolicyManagement.Core.Settings;
 using PolicyManagement.Core.Validators.Policies;
 using PolicyManagement.Infrastructure;
 using PolicyManagement.Infrastructure.Persistence;
+using PolicyManagement.Infrastructure.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,9 +47,37 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddDbContext<PolicyManagementDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AuthenticationDbContext>(
+    options =>
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString(
+                "AuthenticationConnection")));
+builder.Services.AddDbContext<PolicyManagementDbContext>(
+    (serviceProvider, options) =>
+    {
+        var currentTenantService =
+            serviceProvider.GetRequiredService<ICurrentTenantService>();
+
+        var configuration =
+            serviceProvider.GetRequiredService<IConfiguration>();
+
+        var connectionString =
+            currentTenantService.IsResolved
+                ? currentTenantService.ConnectionString
+                : configuration.GetConnectionString(
+                    "DefaultTenantConnection");
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException(
+                "No tenant database connection string is configured.");
+        }
+
+        options.UseSqlServer(connectionString);
+    });
+builder.Services.AddScoped<
+    ICurrentTenantService,
+    CurrentTenantService>();
 builder.Services.AddValidatorsFromAssemblyContaining<
     CreatePolicyRequestValidator>();
 builder.Services.AddCors(options =>
@@ -108,6 +138,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthentication();
+
+app.UseTenantResolution();
 
 app.UseAuthorization();
 

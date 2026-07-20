@@ -1,19 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PolicyManagement.Core.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PolicyManagement.Infrastructure.Persistence
 {
     public static class DatabaseSeeder
     {
         public static async Task SeedAsync(
-            PolicyManagementDbContext dbContext,
-            IPasswordHasher<AppUser> passwordHasher)
+     AuthenticationDbContext dbContext,
+     IPasswordHasher<AppUser> passwordHasher)
         {
             const string adminEmail = "admin@policymanagement.com";
 
@@ -25,6 +20,31 @@ namespace PolicyManagement.Infrastructure.Persistence
                 return;
             }
 
+            var tenant = await dbContext.Tenants
+                .FirstOrDefaultAsync(x => x.Identifier == "tenant-a");
+
+            if (tenant is null)
+            {
+                tenant = new Tenant
+                {
+                    RecordGuid = Guid.NewGuid(),
+                    Name = "Default Tenant",
+                    Identifier = "tenant-a",
+                    ConnectionString =
+                        "Server=.\\SQLEXPRESS;" +
+                        "Database=PolicyManagementDb;" +
+                        "Trusted_Connection=True;" +
+                        "Encrypt=True;" +
+                        "TrustServerCertificate=True;",
+                    IsActive = true,
+                    CreatedDate = DateTime.UtcNow,
+                    CreatedBy = "System"
+                };
+
+                await dbContext.Tenants.AddAsync(tenant);
+                await dbContext.SaveChangesAsync();
+            }
+
             var adminUser = new AppUser
             {
                 RecordGuid = Guid.NewGuid(),
@@ -32,6 +52,7 @@ namespace PolicyManagement.Infrastructure.Persistence
                 Email = adminEmail,
                 Role = "Admin",
                 IsActive = true,
+                TenantId = tenant.Id,
                 CreatedDate = DateTime.UtcNow,
                 CreatedBy = "System"
             };

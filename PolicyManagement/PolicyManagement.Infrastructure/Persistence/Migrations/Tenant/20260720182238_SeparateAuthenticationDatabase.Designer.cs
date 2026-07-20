@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PolicyManagement.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace PolicyManagement.Infrastructure.Migrations
+namespace PolicyManagement.Infrastructure.Persistence.Migrations.Tenant
 {
     [DbContext(typeof(PolicyManagementDbContext))]
-    partial class PolicyManagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260720182238_SeparateAuthenticationDatabase")]
+    partial class SeparateAuthenticationDatabase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

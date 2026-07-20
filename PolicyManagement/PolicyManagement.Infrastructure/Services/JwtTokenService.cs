@@ -44,10 +44,16 @@ namespace PolicyManagement.Infrastructure.Services
             new(
                 ClaimTypes.Role,
                 user.Role),
+            new(
+                "tenant_guid",
+                user.Tenant.RecordGuid.ToString()),
 
             new(
+                "tenant_identifier",
+                user.Tenant.Identifier),
+            new(
                 JwtRegisteredClaimNames.Jti,
-                Guid.NewGuid().ToString())
+                Guid.NewGuid().ToString()),
         };
 
             var key = new SymmetricSecurityKey(
